@@ -1,23 +1,16 @@
 import { Model, Sequelize, DataTypes } from "sequelize";
 import database from "../database";
+import Jobs from "./jobs.models";
 
 const Recruiter = database.define(
   "recruiters",
   {
-    id: {
+    recruiter_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
     name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    box: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    phone: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -29,11 +22,22 @@ const Recruiter = database.define(
         isEmail: true,
       },
     },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    organization: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    
   },
   {
     freezeTableName: true,
     timestamps: true,
   }
 );
+
+
 
 export default Recruiter

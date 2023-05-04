@@ -1,10 +1,11 @@
 import { Model, Sequelize, DataTypes } from "sequelize";
 import database from "../database";
+import Recruiter from "./recruiter.models";
 
 const Jobs = database.define(
   "jobs",
   {
-    id: {
+    job_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -31,5 +32,6 @@ const Jobs = database.define(
     timestamps: true,
   }
 );
+
 
 export default Jobs

@@ -31,14 +31,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteJob = exports.updateJob = exports.postJob = exports.deleteProfile = exports.updateProfile = exports.signin = exports.signup = void 0;
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
+const recruiter_models_1 = __importDefault(require("../models/recruiter.models"));
+const jobs_models_1 = __importDefault(require("../models/jobs.models"));
 //1. recruiter sign up
 function signup(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            try {
+                var newUser = req.body;
+                const result = yield recruiter_models_1.default.create(newUser);
+                newUser = result.dataValues;
+                return res.status(200).json({
+                    success: true,
+                    message: newUser,
+                });
+            }
+            catch (e) {
+                console.error(e);
+                res.status(404).json({ message: "Error: " + e });
+            }
             return res.status(200).json({
                 success: true,
                 message: "signup successful",
@@ -71,6 +89,17 @@ exports.signin = signin;
 function updateProfile(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const id = Number(req.params.id);
+            const name = req.params.name;
+            var newUserData = req.body;
+            const update = yield recruiter_models_1.default.update({
+                name: newUserData.name,
+                box: newUserData.box,
+                phone: newUserData.phone,
+                email: newUserData.email
+            }, {
+                where: { id: id },
+            });
             return res.status(200).json({
                 success: true,
                 message: "update successful",
@@ -87,6 +116,10 @@ exports.updateProfile = updateProfile;
 function deleteProfile(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const id = Number(req.params.id);
+            yield recruiter_models_1.default.destroy({
+                where: { id: id },
+            });
             return res.status(200).json({
                 success: true,
                 message: "profile deleted successfully",
@@ -104,6 +137,19 @@ exports.deleteProfile = deleteProfile;
 function postJob(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            try {
+                var newJob = req.body;
+                const result = yield jobs_models_1.default.create(newJob);
+                newJob = result.dataValues;
+                return res.status(200).json({
+                    success: true,
+                    message: newJob,
+                });
+            }
+            catch (e) {
+                console.error(e);
+                res.status(404).json({ message: "Error: " + e });
+            }
             return res.status(200).json({
                 success: true,
                 message: "job posted successfully",
@@ -120,6 +166,17 @@ exports.postJob = postJob;
 function updateJob(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const id = Number(req.params.id);
+            const name = req.params.name;
+            var newUserData = req.body;
+            const update = yield jobs_models_1.default.update({
+                name: newUserData.name,
+                box: newUserData.box,
+                phone: newUserData.phone,
+                email: newUserData.email
+            }, {
+                where: { id: id },
+            });
             return res.status(200).json({
                 success: true,
                 message: "job updated successfully",
@@ -136,6 +193,10 @@ exports.updateJob = updateJob;
 function deleteJob(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const id = Number(req.params.id);
+            yield jobs_models_1.default.destroy({
+                where: { id: id },
+            });
             return res.status(200).json({
                 success: true,
                 message: "job deleted successfully",

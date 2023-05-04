@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import { Request, Response } from 'express';
 import { dbConnection } from './database/dbConnection';
 import routes from './routes';
+import { jobApplications, recruiterJobs } from './models/associations.models';
 
 
 const port = 9000;
@@ -22,8 +23,10 @@ app.use(routes);
 
 
 const start = async() => {
+  recruiterJobs()
+  jobApplications()
   await dbConnection();
- 
+  
   app.listen(port, () => {
     return console.log(`Express is listening at http://localhost:${port}`);
   });

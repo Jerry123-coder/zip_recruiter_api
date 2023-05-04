@@ -31,14 +31,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.application = exports.jobs = exports.deleteApplicantProfile = exports.updateApplicantProfile = exports.applicantSignin = exports.applicantSignup = void 0;
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
+const applicant_models_1 = __importDefault(require("../models/applicant.models"));
+const jobs_models_1 = __importDefault(require("../models/jobs.models"));
 //1. applicant sign up
 function applicantSignup(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            try {
+                var newUser = req.body;
+                const result = yield applicant_models_1.default.create(newUser);
+                newUser = result.dataValues;
+                return res.status(200).json({
+                    success: true,
+                    message: newUser,
+                });
+            }
+            catch (e) {
+                console.error(e);
+                res.status(404).json({ message: "Error: " + e });
+            }
             return res.status(200).json({
                 success: true,
                 message: "signup successful",
@@ -71,6 +89,17 @@ exports.applicantSignin = applicantSignin;
 function updateApplicantProfile(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const id = Number(req.params.id);
+            const name = req.params.name;
+            var newUserData = req.body;
+            const update = yield applicant_models_1.default.update({
+                name: newUserData.name,
+                box: newUserData.box,
+                phone: newUserData.phone,
+                email: newUserData.email
+            }, {
+                where: { id: id },
+            });
             return res.status(200).json({
                 success: true,
                 message: "update successful",
@@ -83,10 +112,14 @@ function updateApplicantProfile(req, res, next) {
     });
 }
 exports.updateApplicantProfile = updateApplicantProfile;
-//4. delete recruiter account
+//4. delete applicant account
 function deleteApplicantProfile(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const id = Number(req.params.id);
+            yield applicant_models_1.default.destroy({
+                where: { id: id },
+            });
             return res.status(200).json({
                 success: true,
                 message: "profile deleted successfully",
@@ -104,6 +137,11 @@ exports.deleteApplicantProfile = deleteApplicantProfile;
 function jobs(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const result = yield jobs_models_1.default.findAll({});
+            res.status(200).json({
+                success: true,
+                users: result
+            });
             return res.status(200).json({
                 success: true,
                 message: "these are the available jobs",

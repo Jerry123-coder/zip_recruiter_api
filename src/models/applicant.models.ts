@@ -4,20 +4,12 @@ import database from "../database";
 const Applicant = database.define(
   "applicants",
   {
-    id: {
+    applicant_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
     name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    box: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    phone: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -29,11 +21,25 @@ const Applicant = database.define(
         isEmail: true,
       },
     },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    cv: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    cover_letter: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     freezeTableName: true,
     timestamps: true,
   }
 );
+
+
 
 export default Applicant
