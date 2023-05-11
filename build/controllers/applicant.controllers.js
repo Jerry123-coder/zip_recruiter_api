@@ -73,10 +73,60 @@ exports.applicantSignup = applicantSignup;
 function applicantSignin(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            res.status(200).json({
-                success: true,
-                message: "signin successful",
-            });
+            try {
+                const { email, password } = req.body;
+                if (!password || !email) {
+                    return res
+                        .status(400)
+                        .json({
+                        success: false,
+                        message: " email or password required"
+                    });
+                }
+                const user = yield applicant_models_1.default.findOne({ where: { email: email } });
+                if (!user)
+                    return res
+                        .status(400)
+                        .json({
+                        success: false,
+                        message: "Login unsuccessful, no such user"
+                    });
+                //verify user password and generate access and refresh tokens
+                // await argon 
+                //     .verify(user.password, password)
+                //     .then(async (e) => {
+                //       const {accessToken, refreshToken} = await generate({
+                //         data: {email: user.email, name: user.name, id:user.recruiter_id},
+                //       });
+                //       const tokens = {
+                //         accessToken: accessToken,
+                //         refreshToken: refreshToken,
+                //     };
+                res.status(200).json({
+                    success: true,
+                    message: "signin successful",
+                    // accessToken,
+                    // refreshToken,
+                    data: user,
+                });
+                // })
+                // .catch((e) => {
+                //   console.error({ 1: e });
+                //   return res.status(400).json({
+                //     success: false,
+                //     message: "Invalid password",
+                //     data: e,
+                //   });
+                // });
+            }
+            catch (e) {
+                console.error(e);
+                return res.status(400).json({
+                    success: false,
+                    message: "Login unsuccessful",
+                    data: console.log(e),
+                });
+            }
         }
         catch (e) {
             console.error(e);
@@ -89,16 +139,16 @@ exports.applicantSignin = applicantSignin;
 function updateApplicantProfile(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const id = Number(req.params.id);
-            const name = req.params.name;
-            var newUserData = req.body;
+            const id = Number(req.body.applicant_id);
+            var updatedApplicantData = req.body;
             const update = yield applicant_models_1.default.update({
-                name: newUserData.name,
-                box: newUserData.box,
-                phone: newUserData.phone,
-                email: newUserData.email
+                name: updatedApplicantData.name,
+                email: updatedApplicantData.email,
+                password: updatedApplicantData.password,
+                cv: updatedApplicantData.cv,
+                cover_letter: updatedApplicantData.cover_letter
             }, {
-                where: { id: id },
+                where: { applicant_id: id },
             });
             return res.status(200).json({
                 success: true,
@@ -116,9 +166,9 @@ exports.updateApplicantProfile = updateApplicantProfile;
 function deleteApplicantProfile(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const id = Number(req.params.id);
+            const id = Number(req.body.applicant_id);
             yield applicant_models_1.default.destroy({
-                where: { id: id },
+                where: { applicant_id: id },
             });
             return res.status(200).json({
                 success: true,
@@ -137,10 +187,10 @@ exports.deleteApplicantProfile = deleteApplicantProfile;
 function jobs(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const result = yield jobs_models_1.default.findAll({});
+            const result = yield jobs_models_1.default.findAll();
             res.status(200).json({
                 success: true,
-                users: result
+                jobs: result
             });
             return res.status(200).json({
                 success: true,
@@ -158,6 +208,19 @@ exports.jobs = jobs;
 function application(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            try {
+                var newJobApplication = req.body;
+                const result = yield jobs_models_1.default.create(newJobApplication);
+                newJobApplication = result.dataValues;
+                return res.status(200).json({
+                    success: true,
+                    message: newJobApplication,
+                });
+            }
+            catch (e) {
+                console.error(e);
+                res.status(404).json({ message: "Error: " + e });
+            }
             return res.status(200).json({
                 success: true,
                 message: "applied successfully",

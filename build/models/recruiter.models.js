@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const database_1 = __importDefault(require("../database"));
-const jobs_models_1 = __importDefault(require("./jobs.models"));
 const Recruiter = database_1.default.define("recruiters", {
     recruiter_id: {
         type: sequelize_1.DataTypes.INTEGER,
@@ -13,14 +12,6 @@ const Recruiter = database_1.default.define("recruiters", {
         primaryKey: true,
     },
     name: {
-        type: sequelize_1.DataTypes.STRING,
-        allowNull: false,
-    },
-    box: {
-        type: sequelize_1.DataTypes.STRING,
-        allowNull: false,
-    },
-    phone: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
@@ -32,12 +23,16 @@ const Recruiter = database_1.default.define("recruiters", {
             isEmail: true,
         },
     },
+    password: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
+    organization: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
 }, {
     freezeTableName: true,
     timestamps: true,
-});
-Recruiter.hasMany(jobs_models_1.default, {
-    foreignKey: 'recruiter_id',
-    as: 'jobs'
 });
 exports.default = Recruiter;

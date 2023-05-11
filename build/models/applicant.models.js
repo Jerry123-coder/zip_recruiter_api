@@ -6,20 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const database_1 = __importDefault(require("../database"));
 const Applicant = database_1.default.define("applicants", {
-    id: {
+    applicant_id: {
         type: sequelize_1.DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
     },
     name: {
-        type: sequelize_1.DataTypes.STRING,
-        allowNull: false,
-    },
-    box: {
-        type: sequelize_1.DataTypes.STRING,
-        allowNull: false,
-    },
-    phone: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
@@ -31,21 +23,17 @@ const Applicant = database_1.default.define("applicants", {
             isEmail: true,
         },
     },
+    password: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
     cv: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: true,
-        unique: true,
-        validate: {
-            isEmail: true,
-        },
     },
     cover_letter: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: true,
-        unique: true,
-        validate: {
-            isEmail: true,
-        },
     },
 }, {
     freezeTableName: true,

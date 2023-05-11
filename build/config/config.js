@@ -23,14 +23,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.db_password = exports.db_user = exports.db_name = exports.db_port = exports.db_host = exports.port = void 0;
+exports.jwt_refresh_secret = exports.jwt_secret = exports.db_password = exports.db_user = exports.db_name = exports.db_port = exports.db_host = exports.port = void 0;
 const dotenv = __importStar(require("dotenv"));
-dotenv.config({
-    path: '${__dirname}/../.env'
-});
+dotenv.config();
 exports.port = Number(process.env.API_PORT);
 exports.db_host = String(process.env.DB_HOST);
 exports.db_port = Number(process.env.DB_PORT);
 exports.db_name = String(process.env.DB_NAME);
 exports.db_user = String(process.env.DB_USER);
 exports.db_password = String(process.env.DB_PASSWORD);
+// export const jwtConfig = {
+//   jwt_secret: process.env.ACCESS_TOKEN,
+//   jwt_refresh_secret: process.env.REFRESH_TOKEN,
+// };
+// export const jwt_secret = process.env.ACCESS_TOKEN;
+// export const jwt_refresh_secret = process.env.REFRESH_TOKEN;
+exports.jwt_secret = "my secret";
+exports.jwt_refresh_secret = "my refresh secret";

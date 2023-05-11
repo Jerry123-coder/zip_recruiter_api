@@ -19,7 +19,7 @@ const dbConnection = () => {
         .authenticate()
         .then((e) => __awaiter(void 0, void 0, void 0, function* () {
         console.log("datatbase connection successful");
-        _1.default.sync({ force: true });
+        _1.default.sync({ alter: true });
     })).catch(e => console.error(e));
 };
 exports.dbConnection = dbConnection;

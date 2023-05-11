@@ -13,16 +13,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const dbConnection_1 = require("./database/dbConnection");
 const routes_1 = __importDefault(require("./routes"));
+const associations_models_1 = require("./models/associations.models");
 const port = 9000;
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 //routes
 app.use(routes_1.default);
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
+    (0, associations_models_1.recruiterJobs)();
+    (0, associations_models_1.jobApplications)();
     yield (0, dbConnection_1.dbConnection)();
     app.listen(port, () => {
         return console.log(`Express is listening at http://localhost:${port}`);

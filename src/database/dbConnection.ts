@@ -6,7 +6,7 @@ export const dbConnection = () => {
         .authenticate()
         .then(async (e) => {
             console.log("datatbase connection successful")
-            database.sync({force: true})
+            database.sync({alter: true})
         }).catch(e=> console.error(e))
 }
 

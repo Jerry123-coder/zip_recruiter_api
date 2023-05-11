@@ -1,5 +1,6 @@
 import http from 'http';
 import express from 'express';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import { Request, Response } from 'express';
 import { dbConnection } from './database/dbConnection';
@@ -10,7 +11,7 @@ import { jobApplications, recruiterJobs } from './models/associations.models';
 const port = 9000;
 const app = express();
 
-
+app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

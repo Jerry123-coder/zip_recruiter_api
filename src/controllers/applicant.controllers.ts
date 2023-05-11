@@ -46,11 +46,65 @@ async function applicantSignup(req: Request, res: Response, next: NextFunction) 
     try {
       
 
-      res.status(200).json({
-        success: true,
-        message: "signin successful",
-       
-      });
+      try {
+      
+        const { email, password} = req.body;
+  
+        if(!password || !email) {
+          return res  
+            .status(400)
+            .json({
+              success: false,
+              message: " email or password required"
+            })
+        }
+  
+        const user:any = await Applicant.findOne({where: {email:email}});
+  
+        if(!user)
+          return res
+            .status(400)
+            .json({
+              success: false,
+              message: "Login unsuccessful, no such user"
+            });
+  
+        //verify user password and generate access and refresh tokens
+        // await argon 
+        //     .verify(user.password, password)
+        //     .then(async (e) => {
+        //       const {accessToken, refreshToken} = await generate({
+        //         data: {email: user.email, name: user.name, id:user.recruiter_id},
+        //       });
+  
+        //       const tokens = {
+        //         accessToken: accessToken,
+        //         refreshToken: refreshToken,
+        //     };
+              res.status(200).json({
+                success: true,
+                message: "signin successful",
+                // accessToken,
+                // refreshToken,
+                data:user,
+              });
+      // })
+      // .catch((e) => {
+      //   console.error({ 1: e });
+      //   return res.status(400).json({
+      //     success: false,
+      //     message: "Invalid password",
+      //     data: e,
+      //   });
+      // });
+  
+      } catch (e) {
+        console.error(e);
+        return res.status(400).json({ 
+          success: false,
+          message: "Login unsuccessful",
+          data: console.log(e),  });
+      }
 
     } catch (e) {
       console.error(e);
