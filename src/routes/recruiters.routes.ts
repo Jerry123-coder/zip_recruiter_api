@@ -18,8 +18,8 @@ recruiterRouter.delete("/delete_profile", deleteProfile)
 
 //jobs
 recruiterRouter.post("/post_job",  postJob);
-recruiterRouter.put("/update_job",  updateJob);
-recruiterRouter.delete("/delete_job",  deleteJob);
+recruiterRouter.put("/update_job/id",  updateJob);
+recruiterRouter.delete("/delete_job/:id",  deleteJob);
 
 
 

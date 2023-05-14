@@ -1,10 +1,12 @@
 import e, { NextFunction, Request, Response } from "express";
 import * as dotenv from "dotenv";
+import argon from 'argon2';
 dotenv.config();
 
 import Recruiter from "../models/recruiter.models";
 import Applicant from "../models/applicant.models";
 import Jobs from "../models/jobs.models";
+import { generate } from "../services/jwt.services";
 
 
 //1. applicant sign up
@@ -13,25 +15,43 @@ async function applicantSignup(req: Request, res: Response, next: NextFunction) 
     try {
 
       try {
-        var newUser = req.body;
+        const { name, email, password, confirmPassword, cv, coverLetter } = req.body;
+  
+        if (!name || !email || !password || !confirmPassword ) {
+          return res.status(400).json({
+            success: false,
+            message: "Name, email or password not inputed",
+          });
+        }
+  
+        if (password !== confirmPassword) {
+          return res.status(400).json({
+            success: false,
+            message: "Passwords don't match, please try again",
+          });
+        }
+  
+        //input validity confirmed, now we hash the password with argon
+        const hash = await argon.hash(password);
+  
+        const newUser = { name, email, password: hash, cv, coverLetter };
+  
         const result = await Applicant.create(newUser);
-        newUser = result.dataValues
-
+        const signedupUser = result;
+  
         return res.status(200).json({
           success: true,
-          message: newUser,
+          message: "Applicant account created successfully",
+          data: signedupUser,
         });
-
       } catch (e) {
         console.error(e);
-        res.status(404).json({message: "Error: "+ e});
-      }
-
-        return res.status(200).json({
-          success: true,
-          message: "signup successful",
+        res.status(404).json({
+          success: false,
+          message: "Account not created",
+          data: "Error:" + e,
         });
-
+      }
     } catch (e) {
       console.error(e);
       return res.status(400).json({ message: console.log(e), success: false });
@@ -69,34 +89,35 @@ async function applicantSignup(req: Request, res: Response, next: NextFunction) 
               message: "Login unsuccessful, no such user"
             });
   
-        //verify user password and generate access and refresh tokens
-        // await argon 
-        //     .verify(user.password, password)
-        //     .then(async (e) => {
-        //       const {accessToken, refreshToken} = await generate({
-        //         data: {email: user.email, name: user.name, id:user.recruiter_id},
-        //       });
-  
-        //       const tokens = {
-        //         accessToken: accessToken,
-        //         refreshToken: refreshToken,
-        //     };
-              res.status(200).json({
-                success: true,
-                message: "signin successful",
-                // accessToken,
-                // refreshToken,
-                data:user,
-              });
-      // })
-      // .catch((e) => {
-      //   console.error({ 1: e });
-      //   return res.status(400).json({
-      //     success: false,
-      //     message: "Invalid password",
-      //     data: e,
-      //   });
-      // });
+        // verify user password and generate access and refresh tokens
+        
+
+        console.log(user);
+        const verify = await argon.verify(user.password, password);
+        console.log({ verify, passwords: {db: user.password, password} });
+        if (!verify)
+          return res.status(400).json({
+            success: false,
+            message: "Invalid password",
+            data: e,
+          });
+            
+           
+        const {accessToken, refreshToken}:any = await generate({
+          data: {email: user.email, name: user.name, id:user.applicant_id},
+        });
+
+        const tokens = {
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        };
+          res.status(200).json({
+            success: true,
+            message: "signin successful",
+            accessToken,
+            refreshToken,
+            data:user,
+          });
   
       } catch (e) {
         console.error(e);

@@ -10,6 +10,8 @@ import { isArgumentsObject } from "util/types";
 import { generate } from "../services/jwt.services";
 import { verify } from "../services/jwt.services";
 
+var jobs= []
+
 //generate all recruiters
 async function generateRecruiters(
   req: Request,
@@ -19,7 +21,6 @@ async function generateRecruiters(
   try {
     try {
       const result = await Recruiter.findAll();
-
       return res.status(200).json({
         success: true,
         message: result,
@@ -42,12 +43,13 @@ async function generateRecruiterJobs(
 ) {
   try {
     const id = Number(req.params.id);
-    const result = Jobs.findAll({ where: { recruiterRecruiterId: id } });
+    const result = await Jobs.findAll({ where: { recruiterRecruiterId: id } });
+    jobs = [...result]
     res.status(200).json({
       success: true,
-      job_posts: result,
+      job_posts: jobs,
     });
-    console.log(result);
+    console.log(jobs);
 
     // return res.status(200).json({
     //   success: true,
@@ -291,7 +293,10 @@ async function updateJob(req: Request, res: Response, next: NextFunction) {
 // 6. delete job
 async function deleteJob(req: Request, res: Response, next: NextFunction) {
   try {
-    const id = Number(req.body.job_id);
+
+    const id = Number(req.query);
+    // const id = Number(req.body.job_id);
+    console.log(id)
     await Jobs.destroy({
       where: { job_id: id },
     });

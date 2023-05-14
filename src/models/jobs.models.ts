@@ -6,7 +6,7 @@ const Jobs = database.define(
   "jobs",
   {
     job_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.NUMBER,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -14,7 +14,15 @@ const Jobs = database.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    organization: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     job_location: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    job_type:{
       type: DataTypes.STRING,
       allowNull: false,
     },
