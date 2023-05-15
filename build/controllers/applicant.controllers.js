@@ -36,31 +36,50 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.application = exports.jobs = exports.deleteApplicantProfile = exports.updateApplicantProfile = exports.applicantSignin = exports.applicantSignup = void 0;
+const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
+const argon2_1 = __importDefault(require("argon2"));
 dotenv.config();
 const applicant_models_1 = __importDefault(require("../models/applicant.models"));
 const jobs_models_1 = __importDefault(require("../models/jobs.models"));
+const jwt_services_1 = require("../services/jwt.services");
 //1. applicant sign up
 function applicantSignup(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             try {
-                var newUser = req.body;
+                const { name, email, password, confirmPassword, cv, coverLetter } = req.body;
+                if (!name || !email || !password || !confirmPassword) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Name, email or password not inputed",
+                    });
+                }
+                if (password !== confirmPassword) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Passwords don't match, please try again",
+                    });
+                }
+                //input validity confirmed, now we hash the password with argon
+                const hash = yield argon2_1.default.hash(password);
+                const newUser = { name, email, password: hash, cv, coverLetter };
                 const result = yield applicant_models_1.default.create(newUser);
-                newUser = result.dataValues;
+                const signedupUser = result;
                 return res.status(200).json({
                     success: true,
-                    message: newUser,
+                    message: "Applicant account created successfully",
+                    data: signedupUser,
                 });
             }
             catch (e) {
                 console.error(e);
-                res.status(404).json({ message: "Error: " + e });
+                res.status(404).json({
+                    success: false,
+                    message: "Account not created",
+                    data: "Error:" + e,
+                });
             }
-            return res.status(200).json({
-                success: true,
-                message: "signup successful",
-            });
         }
         catch (e) {
             console.error(e);
@@ -91,33 +110,30 @@ function applicantSignin(req, res, next) {
                         success: false,
                         message: "Login unsuccessful, no such user"
                     });
-                //verify user password and generate access and refresh tokens
-                // await argon 
-                //     .verify(user.password, password)
-                //     .then(async (e) => {
-                //       const {accessToken, refreshToken} = await generate({
-                //         data: {email: user.email, name: user.name, id:user.recruiter_id},
-                //       });
-                //       const tokens = {
-                //         accessToken: accessToken,
-                //         refreshToken: refreshToken,
-                //     };
+                // verify user password and generate access and refresh tokens
+                console.log(user);
+                const verify = yield argon2_1.default.verify(user.password, password);
+                console.log({ verify, passwords: { db: user.password, password } });
+                if (!verify)
+                    return res.status(400).json({
+                        success: false,
+                        message: "Invalid password",
+                        data: express_1.default,
+                    });
+                const { accessToken, refreshToken } = yield (0, jwt_services_1.generate)({
+                    data: { email: user.email, name: user.name, id: user.applicant_id },
+                });
+                const tokens = {
+                    accessToken: accessToken,
+                    refreshToken: refreshToken,
+                };
                 res.status(200).json({
                     success: true,
                     message: "signin successful",
-                    // accessToken,
-                    // refreshToken,
+                    accessToken,
+                    refreshToken,
                     data: user,
                 });
-                // })
-                // .catch((e) => {
-                //   console.error({ 1: e });
-                //   return res.status(400).json({
-                //     success: false,
-                //     message: "Invalid password",
-                //     data: e,
-                //   });
-                // });
             }
             catch (e) {
                 console.error(e);

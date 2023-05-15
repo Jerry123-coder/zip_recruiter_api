@@ -202,8 +202,7 @@ async function applicantSignup(req: Request, res: Response, next: NextFunction) 
           success: true,
           jobs: result 
         });
-
-       
+      
         return res.status(200).json({
           success: true,
           message: "these are the available jobs",

@@ -265,18 +265,21 @@ async function postJob(req: Request, res: Response, next: NextFunction) {
 // 6. update job
 async function updateJob(req: Request, res: Response, next: NextFunction) {
   try {
-    const id = Number(req.body.recruiterRecruiterId);
+    const recruiter_id = Number(req.body.recruiterRecruiterId);
+    const job_id = Number(req.body.job_id);
     var updatedJobData = req.body;
     const update = await Jobs.update(
       {
         job_id: updatedJobData.job_id,
         job_title: updatedJobData.job_title,
+        organization: updatedJobData.organization,
         job_location: updatedJobData.job_location,
+        job_type: updatedJobData.job_type,
         job_description: updatedJobData.job_description,
         pay: updatedJobData.pay,
       },
       {
-        where: { recruiterRecruiterId: id },
+        where: { recruiterRecruiterId: recruiter_id, job_id: job_id },
       }
     );
 
@@ -294,7 +297,7 @@ async function updateJob(req: Request, res: Response, next: NextFunction) {
 async function deleteJob(req: Request, res: Response, next: NextFunction) {
   try {
 
-    const id = Number(req.query);
+    const id = Number(req.params.id);
     // const id = Number(req.body.job_id);
     console.log(id)
     await Jobs.destroy({

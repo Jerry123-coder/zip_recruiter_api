@@ -7,7 +7,7 @@ const sequelize_1 = require("sequelize");
 const database_1 = __importDefault(require("../database"));
 const Jobs = database_1.default.define("jobs", {
     job_id: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.NUMBER,
         autoIncrement: true,
         primaryKey: true,
     },
@@ -15,7 +15,15 @@ const Jobs = database_1.default.define("jobs", {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
+    organization: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
     job_location: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
+    job_type: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },

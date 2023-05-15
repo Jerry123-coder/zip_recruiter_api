@@ -45,6 +45,7 @@ const jobs_models_1 = __importDefault(require("../models/jobs.models"));
 const applicant_models_1 = __importDefault(require("../models/applicant.models"));
 const jwt_services_1 = require("../services/jwt.services");
 const jwt_services_2 = require("../services/jwt.services");
+var jobs = [];
 //generate all recruiters
 function generateRecruiters(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -73,12 +74,13 @@ function generateRecruiterJobs(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const id = Number(req.params.id);
-            const result = jobs_models_1.default.findAll({ where: { recruiterRecruiterId: id } });
+            const result = yield jobs_models_1.default.findAll({ where: { recruiterRecruiterId: id } });
+            jobs = [...result];
             res.status(200).json({
                 success: true,
-                job_posts: result,
+                job_posts: jobs,
             });
-            console.log(result);
+            console.log(jobs);
             // return res.status(200).json({
             //   success: true,
             //   message: "these are the jobs you've posted" + ,
@@ -313,7 +315,9 @@ exports.updateJob = updateJob;
 function deleteJob(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const id = Number(req.body.job_id);
+            const id = Number(req.query);
+            // const id = Number(req.body.job_id);
+            console.log(id);
             yield jobs_models_1.default.destroy({
                 where: { job_id: id },
             });
