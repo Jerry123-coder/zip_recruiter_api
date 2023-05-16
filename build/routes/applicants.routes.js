@@ -10,6 +10,6 @@ applicantRouter.post("/signin", applicant_controllers_1.applicantSignin);
 applicantRouter.put("/update_profile", applicant_controllers_1.updateApplicantProfile);
 applicantRouter.delete("/delete_profile", applicant_controllers_1.deleteApplicantProfile);
 //jobs
-applicantRouter.get("/jobs", applicant_controllers_1.jobs);
+// applicantRouter.get("/jobs",  jobs);
 applicantRouter.post("/application", applicant_controllers_1.application);
 exports.default = applicantRouter;

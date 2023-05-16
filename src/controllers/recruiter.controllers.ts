@@ -9,8 +9,9 @@ import Applicant from "../models/applicant.models";
 import { isArgumentsObject } from "util/types";
 import { generate } from "../services/jwt.services";
 import { verify } from "../services/jwt.services";
+import Applications from "../models/applications.models";
 
-var jobs= []
+var jobs = [];
 
 //generate all recruiters
 async function generateRecruiters(
@@ -44,7 +45,7 @@ async function generateRecruiterJobs(
   try {
     const id = Number(req.params.id);
     const result = await Jobs.findAll({ where: { recruiterRecruiterId: id } });
-    jobs = [...result]
+    jobs = [...result];
     res.status(200).json({
       success: true,
       job_posts: jobs,
@@ -153,7 +154,7 @@ async function signin(req: Request, res: Response, next: NextFunction) {
     // verify user password and generate access and refresh tokens
     console.log(user);
     const verify = await argon.verify(user.password, password);
-    console.log({ verify, passwords: {db: user.password, password} });
+    console.log({ verify, passwords: { db: user.password, password } });
     if (!verify)
       return res.status(400).json({
         success: false,
@@ -296,10 +297,9 @@ async function updateJob(req: Request, res: Response, next: NextFunction) {
 // 6. delete job
 async function deleteJob(req: Request, res: Response, next: NextFunction) {
   try {
-
     const id = Number(req.params.id);
     // const id = Number(req.body.job_id);
-    console.log(id)
+    console.log(id);
     await Jobs.destroy({
       where: { job_id: id },
     });
@@ -308,6 +308,61 @@ async function deleteJob(req: Request, res: Response, next: NextFunction) {
       success: true,
       message: "job deleted successfully",
     });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).json({ message: console.log(e), success: false });
+  }
+}
+
+//generate all applicant's jobs
+async function manageApplicants(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+    try {
+      const id = Number(req.body.application_id);
+      // const job_id = Number(req.body.job_id);
+      var updatedJob = req.body;
+      const update = await Applications.update(
+        {
+          application_id: updatedJob.application_id,
+          status: updatedJob.status
+        },
+        {
+          where: { application_id: id },
+        }
+      );
+  
+      return res.status(200).json({
+        success: true,
+        // message: ,
+      });
+
+
+  } catch (e) {
+    console.error(e);
+    return res.status(400).json({ message: console.log(e), success: false });
+  }
+}
+
+//generate all applicant's jobs
+async function generateApplicants(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const id = Number(req.params.id);
+    const result = await Applications.findAll({where: {recruiterRecruiterId: id}}, 
+  
+    );
+    const applications = [...result];
+    res.status(200).json({
+      success: true,
+      job_applications: applications,
+    });
+    console.log(result);
   } catch (e) {
     console.error(e);
     return res.status(400).json({ message: console.log(e), success: false });
@@ -345,6 +400,8 @@ export {
   deleteProfile,
   postJob,
   updateJob,
+  generateApplicants,
+  manageApplicants,
   deleteJob,
   refreshtoken,
 };

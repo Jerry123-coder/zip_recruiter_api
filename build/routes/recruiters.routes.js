@@ -13,6 +13,6 @@ recruiterRouter.put("/update_profile", recruiter_controllers_1.updateProfile);
 recruiterRouter.delete("/delete_profile", recruiter_controllers_1.deleteProfile);
 //jobs
 recruiterRouter.post("/post_job", recruiter_controllers_1.postJob);
-recruiterRouter.put("/update_job/id", recruiter_controllers_1.updateJob);
+recruiterRouter.put("/update_job", recruiter_controllers_1.updateJob);
 recruiterRouter.delete("/delete_job/:id", recruiter_controllers_1.deleteJob);
 exports.default = recruiterRouter;

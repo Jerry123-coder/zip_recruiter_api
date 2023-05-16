@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { get } from "http";
-import { signup, signin, updateProfile, deleteProfile, postJob, updateJob, deleteJob, generateRecruiters, generateRecruiterJobs } from "../controllers/recruiter.controllers";
+import { signup, signin, updateProfile, deleteProfile, postJob, updateJob, deleteJob, generateRecruiters, generateRecruiterJobs, generateApplicants, manageApplicants } from "../controllers/recruiter.controllers";
 
 
 
@@ -18,7 +18,9 @@ recruiterRouter.delete("/delete_profile", deleteProfile)
 
 //jobs
 recruiterRouter.post("/post_job",  postJob);
-recruiterRouter.put("/update_job",  updateJob);
+recruiterRouter.put("/update_job",  updateJob); 
+recruiterRouter.get("/applicants/:id",  generateApplicants);
+recruiterRouter.put("/manage_applicant",  manageApplicants);
 recruiterRouter.delete("/delete_job/:id",  deleteJob);
 
 

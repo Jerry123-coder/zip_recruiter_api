@@ -288,16 +288,19 @@ exports.postJob = postJob;
 function updateJob(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const id = Number(req.body.recruiterRecruiterId);
+            const recruiter_id = Number(req.body.recruiterRecruiterId);
+            const job_id = Number(req.body.job_id);
             var updatedJobData = req.body;
             const update = yield jobs_models_1.default.update({
                 job_id: updatedJobData.job_id,
                 job_title: updatedJobData.job_title,
+                organization: updatedJobData.organization,
                 job_location: updatedJobData.job_location,
+                job_type: updatedJobData.job_type,
                 job_description: updatedJobData.job_description,
                 pay: updatedJobData.pay,
             }, {
-                where: { recruiterRecruiterId: id },
+                where: { recruiterRecruiterId: recruiter_id, job_id: job_id },
             });
             return res.status(200).json({
                 success: true,
@@ -315,7 +318,7 @@ exports.updateJob = updateJob;
 function deleteJob(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const id = Number(req.query);
+            const id = Number(req.params.id);
             // const id = Number(req.body.job_id);
             console.log(id);
             yield jobs_models_1.default.destroy({

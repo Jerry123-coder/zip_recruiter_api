@@ -7,6 +7,8 @@ import Recruiter from "../models/recruiter.models";
 import Applicant from "../models/applicant.models";
 import Jobs from "../models/jobs.models";
 import { generate } from "../services/jwt.services";
+import Applications from "../models/applications.models";
+import { jobApplications } from "../models/associations.models";
 
 
 //1. applicant sign up
@@ -189,10 +191,8 @@ async function applicantSignup(req: Request, res: Response, next: NextFunction) 
         return res.status(400).json({ message: console.log(e), success: false });
       }
     }
+
     
-    //jobs
-
-
     // 5. search jobs
     async function jobs(req: Request, res: Response, next: NextFunction) {
       try {
@@ -203,12 +203,7 @@ async function applicantSignup(req: Request, res: Response, next: NextFunction) 
           jobs: result 
         });
       
-        return res.status(200).json({
-          success: true,
-          message: "these are the available jobs",
-          
-        });
-  
+        console.log(result)
       } catch (e) {
         console.error(e);
         return res.status(400).json({ message: console.log(e), success: false });
@@ -222,7 +217,7 @@ async function applicantSignup(req: Request, res: Response, next: NextFunction) 
           
           try {
             var newJobApplication = req.body;
-            const result = await Jobs.create(newJobApplication);
+            const result = await Applications.create(newJobApplication);
             newJobApplication = result.dataValues
     
             return res.status(200).json({
@@ -247,10 +242,34 @@ async function applicantSignup(req: Request, res: Response, next: NextFunction) 
         }
       }
 
+
+  //generate all applicant's jobs
+    async function generateJobsApplied(
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ) {
+      try {
+        const id = Number(req.params.id);
+        const result = await Applications.findAll({ where: { applicant_id: id } });
+        const applications = [...result]
+        res.status(200).json({
+          success: true,
+          job_applications: applications,
+        });
+        console.log(jobs);
+
+      } catch (e) {
+        console.error(e);
+        return res.status(400).json({ message: console.log(e), success: false });
+      }
+    }
+
+
       
 
 
-  export { applicantSignup, applicantSignin, updateApplicantProfile, deleteApplicantProfile, jobs, application };
+  export { applicantSignup, applicantSignin, updateApplicantProfile, deleteApplicantProfile, jobs, application, generateJobsApplied };
 
 
   

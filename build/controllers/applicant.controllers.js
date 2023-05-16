@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.application = exports.jobs = exports.deleteApplicantProfile = exports.updateApplicantProfile = exports.applicantSignin = exports.applicantSignup = void 0;
+exports.application = exports.deleteApplicantProfile = exports.updateApplicantProfile = exports.applicantSignin = exports.applicantSignup = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 const argon2_1 = __importDefault(require("argon2"));
@@ -200,26 +200,22 @@ function deleteApplicantProfile(req, res, next) {
 exports.deleteApplicantProfile = deleteApplicantProfile;
 //jobs
 // 5. search jobs
-function jobs(req, res, next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const result = yield jobs_models_1.default.findAll();
-            res.status(200).json({
-                success: true,
-                jobs: result
-            });
-            return res.status(200).json({
-                success: true,
-                message: "these are the available jobs",
-            });
-        }
-        catch (e) {
-            console.error(e);
-            return res.status(400).json({ message: console.log(e), success: false });
-        }
-    });
-}
-exports.jobs = jobs;
+// async function jobs(req: Request, res: Response, next: NextFunction) {
+//   try {
+//     const result = await Jobs.findAll();
+//     res.status(200).json({ 
+//       success: true,
+//       jobs: result 
+//     });
+//     return res.status(200).json({
+//       success: true,
+//       message: "these are the available jobs",
+//     });
+//   } catch (e) {
+//     console.error(e);
+//     return res.status(400).json({ message: console.log(e), success: false });
+//   }
+// }
 // 6. apply for job
 function application(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
