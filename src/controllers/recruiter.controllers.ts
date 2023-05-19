@@ -320,26 +320,24 @@ async function manageApplicants(
   res: Response,
   next: NextFunction
 ) {
-    try {
-      const id = Number(req.body.application_id);
-      // const job_id = Number(req.body.job_id);
-      var updatedJob = req.body;
-      const update = await Applications.update(
-        {
-          application_id: updatedJob.application_id,
-          status: updatedJob.status
-        },
-        {
-          where: { application_id: id },
-        }
-      );
-  
-      return res.status(200).json({
-        success: true,
-        // message: ,
-      });
+  try {
+    const id = Number(req.body.application_id);
+    // const job_id = Number(req.body.job_id);
+    var updatedJob = req.body;
+    const update = await Applications.update(
+      {
+        application_id: updatedJob.application_id,
+        status: updatedJob.status,
+      },
+      {
+        where: { application_id: id },
+      }
+    );
 
-
+    return res.status(200).json({
+      success: true,
+      // message: ,
+    });
   } catch (e) {
     console.error(e);
     return res.status(400).json({ message: console.log(e), success: false });
@@ -354,15 +352,59 @@ async function generateApplicants(
 ) {
   try {
     const id = Number(req.params.id);
-    const result = await Applications.findAll({where: {recruiterRecruiterId: id}}, 
-  
-    );
+    const result = await Applications.findAll({
+      where: { recruiterRecruiterId: id },
+      order: [["createdAt", "asc"]],
+    });
     const applications = [...result];
     res.status(200).json({
       success: true,
       job_applications: applications,
     });
     console.log(result);
+  } catch (e) {
+    console.error(e);
+    return res.status(400).json({ message: console.log(e), success: false });
+  }
+}
+
+async function getfile(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email, filetype } = req.query;
+
+    Applicant.findOne({ where: { email } })
+      .then((e: any) =>
+        res.status(200).json({
+          success: true,
+          data: filetype === "cv" ? e.cv : e.cover_letter,
+        })
+      )
+      .catch((e) => {
+        throw e;
+      });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).json({ message: console.log(e), success: false });
+  }
+}
+
+//generate all applicant's jobs
+async function deleteApplicants(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const id = Number(req.params.id);
+    console.log(id);
+    await Applications.destroy({
+      where: { application_id: id },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "deleted successfully",
+    });
   } catch (e) {
     console.error(e);
     return res.status(400).json({ message: console.log(e), success: false });
@@ -402,6 +444,8 @@ export {
   updateJob,
   generateApplicants,
   manageApplicants,
+  deleteApplicants,
   deleteJob,
   refreshtoken,
+  getfile,
 };

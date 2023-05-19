@@ -34,6 +34,10 @@ const Applications = database.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    job_data: {
+        type:DataTypes.JSON,
+        allowNull: false
+    },
     applicantApplicantId: {
       type: DataTypes.INTEGER,
       allowNull: false,

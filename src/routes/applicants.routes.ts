@@ -1,6 +1,7 @@
 import {  Router } from "express";
 import { get } from "http";
-import { applicantSignin, applicantSignup, application, deleteApplicantProfile, generateJobsApplied, jobs, updateApplicantProfile } from "../controllers/applicant.controllers";
+import { applicantSignin, applicantSignup, application, deleteApplicantProfile, generateJobsApplied, jobs, searchjobs, updateApplicantProfile } from "../controllers/applicant.controllers";
+import authenticateToken from "../middleware/authenticateToken.middleware";
 import { upload } from "../services/multer.services";
 
 ;
@@ -10,13 +11,14 @@ const applicantRouter = Router();
 //applicant data
 applicantRouter.post("/signup",  applicantSignup);
 applicantRouter.post("/signin",  applicantSignin);
-applicantRouter.put("/update_profile", updateApplicantProfile)
-applicantRouter.delete("/delete_profile", deleteApplicantProfile)
+applicantRouter.put("/update_profile", authenticateToken, updateApplicantProfile)
+applicantRouter.delete("/delete_profile", authenticateToken, deleteApplicantProfile)
 
 //jobs
-applicantRouter.get("/jobs",  jobs);
-applicantRouter.post("/application",  application);
-applicantRouter.get("/applications/:id",  generateJobsApplied); 
+applicantRouter.get("/jobs", jobs);
+applicantRouter.get("/search_jobs", authenticateToken, searchjobs);
+applicantRouter.post("/application", authenticateToken, application);
+applicantRouter.get("/applications/:id", authenticateToken, generateJobsApplied); 
 
 // applicantRouter.post('/upload', upload.single('pdf'), (req, res) => {
 //     if (!req.file) {
