@@ -5,38 +5,54 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const database_1 = __importDefault(require("../database"));
-const Jobs = database_1.default.define("jobs", {
-    job_id: {
+const Applications = database_1.default.define("applications", {
+    application_id: {
         type: sequelize_1.DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
+    },
+    applicant_name: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
+    applicant_email: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
     },
     job_title: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
-    organization: {
+    cv: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
-    job_location: {
+    cover_letter: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
-    job_type: {
+    status: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
-    job_description: {
-        type: sequelize_1.DataTypes.STRING,
+    job_data: {
+        type: sequelize_1.DataTypes.JSON,
+        allowNull: false
+    },
+    applicantApplicantId: {
+        type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
-    pay: {
-        type: sequelize_1.DataTypes.STRING,
+    jobJobId: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+    },
+    recruiterRecruiterId: {
+        type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
 }, {
     freezeTableName: true,
     timestamps: true,
 });
-exports.default = Jobs;
+exports.default = Applications;

@@ -6,12 +6,10 @@ import {
   db_name,
   db_user,
   db_password,
+  db_production,
 } from "../config/config";
 
-export default new Sequelize(db_name, db_user, db_password, {
-  host: db_host,
+export default new Sequelize(db_production, {
+  // host: db_host,
   dialect: "postgres",
 });
-
-
-

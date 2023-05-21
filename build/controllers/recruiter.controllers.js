@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.refreshtoken = exports.deleteJob = exports.updateJob = exports.postJob = exports.deleteProfile = exports.updateProfile = exports.signin = exports.signup = exports.generateRecruiterJobs = exports.generateRecruiters = void 0;
+exports.getfile = exports.refreshtoken = exports.deleteJob = exports.deleteApplicants = exports.manageApplicants = exports.generateApplicants = exports.updateJob = exports.postJob = exports.deleteProfile = exports.updateProfile = exports.signin = exports.signup = exports.generateRecruiterJobs = exports.generateRecruiters = void 0;
 const express_1 = __importDefault(require("express"));
 const argon = __importStar(require("argon2"));
 const dotenv = __importStar(require("dotenv"));
@@ -45,6 +45,7 @@ const jobs_models_1 = __importDefault(require("../models/jobs.models"));
 const applicant_models_1 = __importDefault(require("../models/applicant.models"));
 const jwt_services_1 = require("../services/jwt.services");
 const jwt_services_2 = require("../services/jwt.services");
+const applications_models_1 = __importDefault(require("../models/applications.models"));
 var jobs = [];
 //generate all recruiters
 function generateRecruiters(req, res, next) {
@@ -336,6 +337,95 @@ function deleteJob(req, res, next) {
     });
 }
 exports.deleteJob = deleteJob;
+//generate all applicant's jobs
+function manageApplicants(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const id = Number(req.body.application_id);
+            // const job_id = Number(req.body.job_id);
+            var updatedJob = req.body;
+            const update = yield applications_models_1.default.update({
+                application_id: updatedJob.application_id,
+                status: updatedJob.status,
+            }, {
+                where: { application_id: id },
+            });
+            return res.status(200).json({
+                success: true,
+                // message: ,
+            });
+        }
+        catch (e) {
+            console.error(e);
+            return res.status(400).json({ message: console.log(e), success: false });
+        }
+    });
+}
+exports.manageApplicants = manageApplicants;
+//generate all applicant's jobs
+function generateApplicants(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const id = Number(req.params.id);
+            const result = yield applications_models_1.default.findAll({
+                where: { recruiterRecruiterId: id },
+                order: [["createdAt", "asc"]],
+            });
+            const applications = [...result];
+            res.status(200).json({
+                success: true,
+                job_applications: applications,
+            });
+            console.log(result);
+        }
+        catch (e) {
+            console.error(e);
+            return res.status(400).json({ message: console.log(e), success: false });
+        }
+    });
+}
+exports.generateApplicants = generateApplicants;
+function getfile(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { email, filetype } = req.query;
+            applicant_models_1.default.findOne({ where: { email } })
+                .then((e) => res.status(200).json({
+                success: true,
+                data: filetype === "cv" ? e.cv : e.cover_letter,
+            }))
+                .catch((e) => {
+                throw e;
+            });
+        }
+        catch (e) {
+            console.error(e);
+            return res.status(400).json({ message: console.log(e), success: false });
+        }
+    });
+}
+exports.getfile = getfile;
+//generate all applicant's jobs
+function deleteApplicants(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const id = Number(req.params.id);
+            console.log(id);
+            yield applications_models_1.default.destroy({
+                where: { application_id: id },
+            });
+            return res.status(200).json({
+                success: true,
+                message: "deleted successfully",
+            });
+        }
+        catch (e) {
+            console.error(e);
+            return res.status(400).json({ message: console.log(e), success: false });
+        }
+    });
+}
+exports.deleteApplicants = deleteApplicants;
 function refreshtoken(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

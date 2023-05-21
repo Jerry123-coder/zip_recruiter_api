@@ -18,13 +18,35 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const dbConnection_1 = require("./database/dbConnection");
 const routes_1 = __importDefault(require("./routes"));
 const associations_models_1 = require("./models/associations.models");
+const multer_services_1 = require("./services/multer.services");
+const path_1 = __importDefault(require("path"));
 const port = 9000;
 const app = (0, express_1.default)();
+//Make static directory public
+// app.use("/files", express.static("files"));
+app.use("/files", express_1.default.static(path_1.default.join(__dirname, "./files")));
 app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 //routes
 app.use(routes_1.default);
+app.post("/upload", (req, res, next) => {
+    console.log({ body: req.body });
+    next();
+}, multer_services_1.upload.single("cv"), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: "No file provided" });
+    }
+    // Process the uploaded file (e.g., save it to the database, perform further operations)
+    res.status(200).json({ message: "File uploaded successfully" });
+});
+app.post("/upload", multer_services_1.upload.single("cover"), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: "No file provided" });
+    }
+    // Process the uploaded file (e.g., save it to the database, perform further operations)
+    res.status(200).json({ message: "File uploaded successfully" });
+});
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     (0, associations_models_1.recruiterJobs)();
     (0, associations_models_1.jobApplications)();

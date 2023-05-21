@@ -35,14 +35,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.application = exports.deleteApplicantProfile = exports.updateApplicantProfile = exports.applicantSignin = exports.applicantSignup = void 0;
+exports.generateJobsApplied = exports.application = exports.searchjobs = exports.jobs = exports.deleteApplicantProfile = exports.updateApplicantProfile = exports.applicantSignin = exports.applicantSignup = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 const argon2_1 = __importDefault(require("argon2"));
 dotenv.config();
+const sequelize_1 = require("sequelize");
 const applicant_models_1 = __importDefault(require("../models/applicant.models"));
 const jobs_models_1 = __importDefault(require("../models/jobs.models"));
 const jwt_services_1 = require("../services/jwt.services");
+const applications_models_1 = __importDefault(require("../models/applications.models"));
 //1. applicant sign up
 function applicantSignup(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -95,20 +97,16 @@ function applicantSignin(req, res, next) {
             try {
                 const { email, password } = req.body;
                 if (!password || !email) {
-                    return res
-                        .status(400)
-                        .json({
+                    return res.status(400).json({
                         success: false,
-                        message: " email or password required"
+                        message: " email or password required",
                     });
                 }
                 const user = yield applicant_models_1.default.findOne({ where: { email: email } });
                 if (!user)
-                    return res
-                        .status(400)
-                        .json({
+                    return res.status(400).json({
                         success: false,
-                        message: "Login unsuccessful, no such user"
+                        message: "Login unsuccessful, no such user",
                     });
                 // verify user password and generate access and refresh tokens
                 console.log(user);
@@ -162,7 +160,7 @@ function updateApplicantProfile(req, res, next) {
                 email: updatedApplicantData.email,
                 password: updatedApplicantData.password,
                 cv: updatedApplicantData.cv,
-                cover_letter: updatedApplicantData.cover_letter
+                cover_letter: updatedApplicantData.cover_letter,
             }, {
                 where: { applicant_id: id },
             });
@@ -198,31 +196,65 @@ function deleteApplicantProfile(req, res, next) {
     });
 }
 exports.deleteApplicantProfile = deleteApplicantProfile;
-//jobs
 // 5. search jobs
-// async function jobs(req: Request, res: Response, next: NextFunction) {
-//   try {
-//     const result = await Jobs.findAll();
-//     res.status(200).json({ 
-//       success: true,
-//       jobs: result 
-//     });
-//     return res.status(200).json({
-//       success: true,
-//       message: "these are the available jobs",
-//     });
-//   } catch (e) {
-//     console.error(e);
-//     return res.status(400).json({ message: console.log(e), success: false });
-//   }
-// }
+function jobs(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const result = yield jobs_models_1.default.findAll();
+            res.status(200).json({
+                success: true,
+                jobs: result,
+            });
+            console.log(result);
+        }
+        catch (e) {
+            console.error(e);
+            return res.status(400).json({ message: console.log(e), success: false });
+        }
+    });
+}
+exports.jobs = jobs;
+// 5. search jobs
+function searchjobs(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { job, location } = req.query;
+            // console.log(searchData)
+            // searchData = searchData.toLowerCase()
+            if (!job || job === "" || !location || location === "")
+                return res.json({ success: true, message: "add a search query" });
+            const query = {};
+            if (job && job !== "" && job !== "null")
+                query["job_title"] = {
+                    [sequelize_1.Op.like]: `%${job}%`,
+                };
+            if (location && location !== "" && location !== "null")
+                query["job_location"] = {
+                    [sequelize_1.Op.like]: `%${location}%`,
+                };
+            const result = yield jobs_models_1.default.findAll({
+                where: Object.assign({}, query),
+            });
+            res.status(200).json({
+                success: true,
+                jobs: result,
+            });
+            console.log(result);
+        }
+        catch (e) {
+            console.error(e);
+            return res.status(400).json({ message: console.log(e), success: false });
+        }
+    });
+}
+exports.searchjobs = searchjobs;
 // 6. apply for job
 function application(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             try {
                 var newJobApplication = req.body;
-                const result = yield jobs_models_1.default.create(newJobApplication);
+                const result = yield applications_models_1.default.create(newJobApplication);
                 newJobApplication = result.dataValues;
                 return res.status(200).json({
                     success: true,
@@ -245,3 +277,28 @@ function application(req, res, next) {
     });
 }
 exports.application = application;
+//generate all applicant's jobs
+function generateJobsApplied(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const id = Number(req.params.id);
+            const result = yield applications_models_1.default.findAll({
+                where: { applicantApplicantId: id },
+            });
+            const applications = [...result];
+            // applications.map((job) => {
+            //   const jobData = [...job.job_data]
+            // })
+            res.status(200).json({
+                success: true,
+                job_applications: applications,
+            });
+            console.log(jobs);
+        }
+        catch (e) {
+            console.error(e);
+            return res.status(400).json({ message: console.log(e), success: false });
+        }
+    });
+}
+exports.generateJobsApplied = generateJobsApplied;

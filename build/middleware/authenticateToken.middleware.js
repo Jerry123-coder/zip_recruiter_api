@@ -9,15 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const jwt_services_1 = require("../services/jwt.services");
 const authenticateToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        //split and takeout access token from authorization header
-        // const token: any = req.headers.authorization.split(" ")[1];  
-        // console.log(token);
-        //token verification
-        // const decode: any = await verify({ data: token });
-        //pected original object assigned to the user key in the request body object
-        // req.body["user"] = decode.data;
+        // split and takeout access token from authorization header
+        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+        console.log(token);
+        // token verification
+        const decode = yield (0, jwt_services_1.verify)({ data: token });
+        // pected original object assigned to the user key in the request body object
+        req.body["user"] = decode.data;
         next();
     }
     catch (e) {
