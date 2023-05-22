@@ -246,13 +246,24 @@ async function searchjobs(req: Request, res: Response, next: NextFunction) {
 async function application(req: Request, res: Response, next: NextFunction) {
   try {
     try {
-      var newJobApplication = req.body;
+      var  newJobApplication  = req.body;
+
+      const appliedStatus = await Applications.findOne({ where: { applicant_email: req.body.applicant_email, jobJobId : req.body.jobJobId } })
+      if (appliedStatus) {
+        return res.status(200).json({
+          success: true,
+          applied: appliedStatus,
+          message: "Already Applied",
+        });
+      }
+
       const result = await Applications.create(newJobApplication);
       newJobApplication = result.dataValues;
 
       return res.status(200).json({
         success: true,
-        message: newJobApplication,
+        applied: appliedStatus,
+        message: "Applied Successfully",
       });
     } catch (e) {
       console.error(e);
@@ -261,7 +272,7 @@ async function application(req: Request, res: Response, next: NextFunction) {
 
     return res.status(200).json({
       success: true,
-      message: "applied successfully",
+      message: "applied successfully"
     });
   } catch (e) {
     console.error(e);
